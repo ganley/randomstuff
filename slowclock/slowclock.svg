@@ -1,0 +1,69 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="200" height="200" viewBox="-100 -100 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" onload="slowclock(evt)">
+<script type="text/javascript">
+<![CDATA[xmlns="http://www.w3.org/2000/svg"
+function theta(c) {
+    return (3.6 * c - 90) * Math.PI / 180.0;
+}
+
+function makeTick(svgdoc, radius, angle, length, color) {
+    var s = svgdoc.createElementNS(xmlns, "line");
+    s.setAttribute("x1", (radius - 12.0 - length) * Math.cos(angle));
+    s.setAttribute("y1", (radius - 12.0 - length) * Math.sin(angle));
+    s.setAttribute("x2", (radius - 12.0) * Math.cos(angle));
+    s.setAttribute("y2", (radius - 12.0) * Math.sin(angle));
+    s.setAttribute("stroke", color);
+    svgdoc.documentElement.appendChild(s);
+}
+
+function slowclock(evt) {
+    var svgdoc = evt.target.ownerDocument;
+    var r = 90;
+    var d = new Date;
+    var y = d.getFullYear();
+    var cent = Math.floor(y / 100);
+    var year = y % 100;
+
+    // draw numbers and tick marks
+    for (var i = 0; i < 100; ++i) {
+        var t = theta(i);
+	if (i % 5 == 0) {
+	    var txt = document.createTextNode(i < 10 ? "0" + i : i);
+            var s = svgdoc.createElementNS(xmlns, "text");
+            s.setAttribute("x", r * Math.cos(t));
+            s.setAttribute("y", r * Math.sin(t) + 5);
+            s.setAttribute("stroke", "black");
+            s.setAttribute("text-anchor", "middle");
+	    s.setAttribute("font-size", "9pt");
+	    s.appendChild(txt);
+	    s.text = txt;
+            svgdoc.documentElement.appendChild(s);
+        } 
+	makeTick(svgdoc, r, t, i % 5 == 0 ? 6 : 4,
+	         i == cent || i == year ? "black" : "lightgray");
+    }
+
+    // draw century hand
+    var tcent = theta(cent);
+    var s = svgdoc.createElementNS(xmlns, "line");
+    s.setAttribute("x1", 0);
+    s.setAttribute("y1", 0);
+    s.setAttribute("x2", (r / 2) * Math.cos(tcent));
+    s.setAttribute("y2", (r / 2) * Math.sin(tcent));
+    s.setAttribute("stroke", "black");
+    svgdoc.documentElement.appendChild(s);
+
+    // draw year hand
+    var tyear = theta(year);
+    var s = svgdoc.createElementNS(xmlns, "line");
+    s.setAttribute("x1", 0);
+    s.setAttribute("y1", 0);
+    s.setAttribute("x2", (r - 20) * Math.cos(tyear));
+    s.setAttribute("y2", (r - 20) * Math.sin(tyear));
+    s.setAttribute("stroke", "black");
+    svgdoc.documentElement.appendChild(s);
+}
+// ]]>
+</script>
+</svg>
